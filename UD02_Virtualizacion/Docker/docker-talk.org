@@ -1,0 +1,80 @@
+
+* Docker
+** Introducción
+*** Docker comparte kernel con el sistema igual que Lxc
+   - lxc : Virtualizador de sistema
+   - coreos : demonio de init
+   - docker : virtualización de aplicación
+*** Ventajas de Docker
+    - recursos compartidos y no asignados (más ligeros)
+    - no usan el sistema operativo completo
+    - reutilización de imagenes
+    - tiempo de arranque
+    - solo aplicaciones linux 
+*** Docker CE y Docker EE
+    - EE es certificado, pago por nodo
+    - Imagenes y contenedores : Definicion y diferenciación 
+    de cada uno de estos.
+    Imagen seria ISO de instalacion
+    Contenedor seria el SO en ejecución
+** Instalación
+*** Instalación
+    - En ubuntu: apt install docker.io
+    Grupos:  
+    sudo adduser $USER docker
+   
+*** Comandos basicos
+    - help
+    - docker run -it ubuntu /bin/bash
+    - docker container ls #  
+    - ps 
+    - attach -> contenedor en marcha
+    - docker exec
+    - container inspect
+    - docker run 
+
+*** Puertos
+    Poner en marcha 
+    docker run --name ab -p 8080:80 httpd
+    docker run --name abd -d -p 8080:80 httpd
+
+*** Volumenes
+    Poner con una carpeta
+    docker 
+
+    Poner docker con volumenes
+    
+    create volume es un disco duro del VBox
+
+*** Dispositivos
+    docker run -d -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=unix$DISPLAY --device /dev/snd:/dev/snd --name spotify jess/spotify
+
+
+** DockerFile
+   
+   FROM -> Imagen basica
+   ENV -> Variables de entorno 
+   RUN -> Ejecuta 
+   COPY / ADD -> cop
+   WORKDIR /tmp
+   LABEL Metainformacion
+   EXPOSE 80
+   CMD comando que se ejecutará al final
+
+   docker build . 
+
+
+** Commit
+   docker commit
+
+** Save image
+   
+
+docker image save miimagen | gzip
+
+docker container export 
+
+docker import 
+
+docker push
+

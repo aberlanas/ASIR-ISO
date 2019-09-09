@@ -1,0 +1,68 @@
+--- /usr/share/phpldapadmin/lib/functions.php.orig	2019-04-15 08:35:00.209965637 +0200
++++ /usr/share/phpldapadmin/lib/functions.php	2019-04-15 08:37:39.145393637 +0200
+@@ -51,7 +51,7 @@
+ /**
+  * Loads class definition
+  */
+-function __autoload($className) {
++function my_autoload($className) {
+ 	if (file_exists(HOOKSDIR."classes/$className.php"))
+ 		require_once(HOOKSDIR."classes/$className.php");
+ 	elseif (file_exists(LIBDIR."$className.php"))
+@@ -775,6 +775,8 @@
+ 	return base64_encode($encrypt);
+ }
+ 
++spl_autoload_register("my_autoload");
++
+ /**
+  * Decryption using blowfish algorithm
+  *
+@@ -1080,12 +1082,46 @@
+ 
+ 		$code .= 'return $c;';
+ 
+-		$CACHE[$sortby] = create_function('$a, $b',$code);
++		$CACHE[$sortby] = __create_function('$a, $b',$code);
+ 	}
+ 
+ 	uasort($data,$CACHE[$sortby]);
+ }
+ 
++
++function __create_function($arg, $body) {
++    static $cache = array();
++    static $maxCacheSize = 64;
++    static $sorter;
++
++    if ($sorter === NULL) {
++        $sorter = function($a, $b) {
++            if ($a->hits == $b->hits) {
++                return 0;
++            }
++
++            return ($a->hits < $b->hits) ? 1 : -1;
++        };
++    }
++
++    $crc = crc32($arg . "\\x00" . $body);
++
++    if (isset($cache[$crc])) {
++        ++$cache[$crc][1];
++        return $cache[$crc][0];
++    }
++
++    if (sizeof($cache) >= $maxCacheSize) {
++        uasort($cache, $sorter);
++        array_pop($cache);
++    }
++
++    $cache[$crc] = array($cb = eval('return function('.$arg.'){'.$body.'};'), 0);
++    return $cb;
++}
++
++
++
+ /**
+  * Is compression enabled for output
+  */
